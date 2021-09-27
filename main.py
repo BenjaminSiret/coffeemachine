@@ -50,10 +50,9 @@ PENNY = 0.01
 
 def check_resources(drink):
     """check if there is enough resources to make a drink"""
-    required_ingredients = MENU[drink]["ingredients"]
-    for ingredient in required_ingredients:
-        if resources[ingredient] < required_ingredients[ingredient]:
-            print(f"Sorry, there is not enough {ingredient}")
+    for key, value in MENU[drink]["ingredients"].items():
+        if resources[key] < value:
+            print(f"Sorry there is not enough {key}.")
             return False
     return True
 
@@ -84,40 +83,38 @@ def check_transaction(coins, coffee_price):
 
 
 # MACHINE IN ACTION
+should_continue = True
+while should_continue:
+    user_choice = input("What would you like ? (espresso, latte, cappuccino): ")
 
-user_choice = input("What would you like ? (espresso, latte, cappuccino): ")
+    if user_choice in MENU:
+        if check_resources(user_choice):
+            print("Please insert coins.")
 
-while user_choice not in MENU:
+            inserted_quarters = int(input("How many quarters ?: "))
+            inserted_dimes = int(input("How many dimes ?: "))
+            inserted_nickels = int(input("How many nickles ?: "))
+            inserted_pennies = int(input("How many pennies?: "))
+
+            inserted_coins = coins_calculator(inserted_quarters, inserted_dimes, inserted_nickels, inserted_pennies)
+            price = MENU[user_choice]['cost']
+
+            # if transaction ok and resources ok => make the drink and deducted the resources
+            if check_transaction(inserted_coins, price):
+                required_ingredients = MENU[user_choice]["ingredients"]
+                monetary = monetary_calculator(inserted_coins, price)
+                print(f"Here is ${monetary} in change.")
+                for ingredient in required_ingredients:
+                    resources[ingredient] -= required_ingredients[ingredient]
+                print(f"Here is your {user_choice}. Enjoy!")
+            else:
+                print("Something goes wrong...")
+
     if user_choice == "report":
         print(f"Water: {resources['water']}ml")
         print(f"Milk: {resources['milk']}ml")
         print(f"Coffee: {resources['coffee']}g")
         print(f"Money: {resources['money']}")
+
     elif user_choice == 'off':
         exit()
-    user_choice = input("What would you like ? (espresso, latte, cappuccino): ")
-
-if check_resources(user_choice):
-    print("Please insert coins.")
-
-
-inserted_quarters = int(input("How many quarters ?: "))
-inserted_dimes = int(input("How many dimes ?: "))
-inserted_nickels = int(input("How many nickles ?: "))
-inserted_pennies = int(input("How many pennies?: "))
-
-inserted_coins = coins_calculator(inserted_quarters, inserted_dimes, inserted_nickels, inserted_pennies)
-price = MENU[user_choice]['cost']
-
-
-# if transaction ok and resources ok => make the drink and deducted the resources
-if check_transaction(inserted_coins, price) and check_resources(user_choice):
-    required_ingredients = MENU[user_choice]["ingredients"]
-    monetary = monetary_calculator(inserted_coins, price)
-    print(f"Here is ${monetary} in change.")
-    for ingredient in required_ingredients:
-        resources[ingredient] -= required_ingredients[ingredient]
-        print(ingredient)
-    print(f"Here is your {user_choice}. Enjoy!")
-else:
-    print("Something goes wrong...")
