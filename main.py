@@ -107,8 +107,6 @@ while should_continue:
                 for ingredient in required_ingredients:
                     resources[ingredient] -= required_ingredients[ingredient]
                 print(f"Here is your {user_choice}. Enjoy!")
-            else:
-                print("Something goes wrong...")
 
     if user_choice == "report":
         print(f"Water: {resources['water']}ml")
@@ -117,4 +115,4 @@ while should_continue:
         print(f"Money: {resources['money']}")
 
     elif user_choice == 'off':
-        exit()
+        should_continue = False
